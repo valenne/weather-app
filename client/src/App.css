@@ -8,6 +8,13 @@
   /* colors */
   --bg-white-0: #91818a;
   --bg-white-1: #ebdccb;
+
+  /* text-size */
+  --size-small: 14px;
+  --size-medium: 16px;
+  --size-large: 24px;
+  --size-large-x: 32px;
+  --size-large-xx: 36px;
 }
 
 /* format  */
@@ -215,6 +222,52 @@ a:not([class]) {
 
 .weather__select:hover {
   fill: red;
+}
+
+.weather__container--inner {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card__information {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  margin-left: 20px;
+  max-width: 100%;
+}
+
+.card__header p:first-child {
+  color: #f3752b;
+  font-size: var(--size-small);
+  font-weight: 400;
+}
+
+.card__header p:nth-child(2) {
+  font-size: var(--size-large);
+  font-weight: 700;
+}
+
+.card__temp {
+  display: flex;
+  color: black;
+  font-weight: 100;
+  font-size: var(--size-large-xx);
+}
+
+.card__temp img {
+  max-width: 60px;
+  filter: grayscale(100);
+}
+
+.test {
+  display: flex;
+  flex-direction: column;
+}
+
+.test p {
+  width: 100%;
 }
 
 /* fixed propertys */

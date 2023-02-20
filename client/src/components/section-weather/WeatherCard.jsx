@@ -1,44 +1,48 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { WeatherContext } from "../../context/WeatherContext.jsx";
 import { convertTimestamptoTime } from "../../assets/js/format-date.js";
 
 export const WeatherCard = () => {
-  const { indexLi, responseWeather, showData } = useContext(WeatherContext);
+  const { showData, isSelected, setIsSelected } = useContext(WeatherContext);
 
-  console.log(`data selecionada`, showData);
+  console.log(isSelected);
+  console.log(showData);
 
   return (
-    <div className="container-weather flex flex-col justify-center">
-      <div>
-        <p>{convertTimestamptoTime(responseWeather.dt)}</p>
-        <p>
-          {responseWeather.name}, <span>{responseWeather.sys.country}</span>
-        </p>
-      </div>
-      <div className="flex flex-col align-middle">
-        <p>Room Temperature</p>
-        <div className="flex flex-row">
-          <img
-            className="w-15"
-            src={`http://openweathermap.org/img/wn/${responseWeather.weather[0].icon}@2x.png`}
-            alt="weather of the country"
-          />
-          <p className="">{Math.round(responseWeather.main.temp, 2)}°C</p>
-        </div>
-      </div>
-      <div>
-        <p>Feels Like: {Math.round(responseWeather.main["feels_like"])}°C</p>
+    <>
+      {isSelected ? (
+        <div className="card__information">
+          <div className="card__header">
+            <p>{convertTimestamptoTime(showData.dt).complete_time}</p>
+            <p>
+              {showData.name}, <span>{showData.sys.country}</span>
+            </p>
+          </div>
 
-        <p>Weather Description: {responseWeather.weather[0].description}</p>
-      </div>
-      <div>
-        <ul>
-          <li>wind: {responseWeather.wind.speed} m/s</li>
-          <li>humedad</li>
-          <li>visibilidad</li>
-          <li>anochecer</li>
-        </ul>
-      </div>
-    </div>
+          <div className="card__temp">
+            <img
+              className=""
+              src={`http://openweathermap.org/img/wn/${showData.weather[0].icon}@2x.png`}
+              alt="weather of the country"
+            />
+            <p className="">{Math.round(showData.main.temp, 2)}°C</p>
+          </div>
+
+          <div className="test">
+            <p>Feels Like: {Math.round(showData.main["feels_like"])}°C</p>
+
+            <p>Weather: {showData.weather[0].description}</p>
+          </div>
+          <div className="test">
+            <p>Wind: {showData.wind.speed} m/s</p>
+            <p>Humidity: {showData.main.humidity}%</p>
+            <p>Visibility {showData.visibility / 1000} km</p>
+            <p>
+              Sunset: {convertTimestamptoTime(showData.sys.sunset).minimal_time}
+            </p>
+          </div>
+        </div>
+      ) : null}
+    </>
   );
 };

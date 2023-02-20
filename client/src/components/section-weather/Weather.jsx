@@ -6,13 +6,13 @@ import { WeatherCard } from "./WeatherCard.jsx";
 import { WeatherForm } from "./WeatherForm.jsx";
 
 const Weather = () => {
-  const { captureIndexLi } = useContext(WeatherContext);
-
   return (
     <div className="weather">
       <div className="weather__container">
-        <WeatherForm captureIndexLi={captureIndexLi} />
-        <WeatherCard />
+        <div className="weather__container--inner">
+          <WeatherForm />
+          <WeatherCard />
+        </div>
       </div>
     </div>
   );

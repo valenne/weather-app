@@ -31,5 +31,8 @@ export const convertTimestamptoTime = (timeUnix) => {
   const hourIndex = dateObj.toLocaleString().indexOf(",") + 1;
   const hour = dateObj.toLocaleString().slice(hourIndex).trim();
 
-  return `${monthShortName} ${dayNumber}, ${hour}`;
+  return {
+    complete_time: `${monthShortName} ${dayNumber}, ${hour}`,
+    minimal_time: hour,
+  };
 };

@@ -1,24 +1,26 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState } from "react";
+
+import { weatherData } from "../api/weather-data.js";
 
 export const WeatherContext = createContext();
 
 export const WeatherContextProvider = ({ children }) => {
   const [responseWeather, setResponseWeather] = useState([]);
-  const [isCompleted, setIsCompleted] = useState(false);
+  const [isSelected, setIsSelected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [indexLi, setIndexLi] = useState("");
   const [showData, setShowData] = useState({});
 
-  // capture li index to render data on weathercard component
-  const captureIndexLi = (e) => {
-    if (typeof e.target.parentElement.value == "number") {
-      setIndexLi(e.target.parentElement.value);
-      setShowData(responseWeather[e.target.parentElement.value]);
-    } else if (typeof e.target.parentElement.parentElement.value == "number") {
-      setIndexLi(e.target.parentElement.parentElement.value);
-      setShowData(responseWeather[e.target.parentElement.value]);
+  const [captureIndex, setCaptureIndex] = useState("");
+
+  const getWeatherData = async (city) => {
+    try {
+      setIsLoading(true);
+      let response = await weatherData(city);
+      setResponseWeather(response);
+      setIsLoading(false);
+    } catch (e) {
+      console.error(e.message);
     }
-    return;
   };
 
   return (
@@ -26,13 +28,15 @@ export const WeatherContextProvider = ({ children }) => {
       value={{
         responseWeather,
         setResponseWeather,
-        isCompleted,
-        setIsCompleted,
+        isSelected,
+        setIsSelected,
         isLoading,
         setIsLoading,
-        captureIndexLi,
-        indexLi,
         showData,
+        setShowData,
+        captureIndex,
+        setCaptureIndex,
+        getWeatherData,
       }}
     >
       {children}

@@ -1,4 +1,4 @@
-import React, { useContext, useState, useRef } from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
 import { WeatherContext } from "../../context/WeatherContext.jsx";
 import { weatherData } from "../../api/weather-data.js";
 import { capitalize } from "../../assets/js/capitalize-string.js";
@@ -6,48 +6,63 @@ import { capitalize } from "../../assets/js/capitalize-string.js";
 // icons
 import { IoMdRadioButtonOn } from "react-icons/io";
 
-export const WeatherForm = ({ captureIndexLi }) => {
+export const WeatherForm = () => {
   const [cityName, setCityName] = useState("");
 
   // ref to ul container
-  const refUl = useRef(null);
+  const refContainer = useRef();
 
   const {
-    setResponseWeather,
     responseWeather,
-    isCompleted,
-    setIsCompleted,
-    setIsLoading,
     isLoading,
+    setShowData,
+    captureIndex,
+    setCaptureIndex,
+    getWeatherData,
+    isSelected,
+    setIsSelected,
   } = useContext(WeatherContext);
 
   // handlesubmit form city name
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (e.target[0].value) {
+      setIsSelected(false);
+    }
     let city = e.target[0].value;
+
     setCityName(city);
 
     try {
       await getWeatherData(city);
       e.target.reset();
     } catch (e) {
-      setIsCompleted(false);
       throw new Error("error getting data weatherForm");
     }
   };
 
-  const getWeatherData = async (city) => {
-    try {
-      setIsLoading(true);
-      let response = await weatherData(city);
-      setResponseWeather(response);
-      setIsLoading(false);
-    } catch (e) {
-      console.error(e.message);
+  // capture li index to render data on weathercard component
+  const captureIndexLi = (e) => {
+    if (typeof e.target.parentElement.value == "number") {
+      setCaptureIndex(e.target.parentElement.value);
+    } else if (typeof e.target.parentElement.parentElement.value == "number") {
+      setCaptureIndex(e.target.parentElement.parentElement.value);
     }
+    return;
   };
+
+  useEffect(() => {
+    (async () => {
+      let response = await responseWeather[captureIndex];
+      if (response !== undefined) {
+        setShowData(response);
+        setIsSelected(true);
+        // set none to hide ul-data
+      }
+      return null;
+    })();
+  }, [captureIndex]);
 
   const renderDataInput = responseWeather.map((value, key) => {
     return (
@@ -101,7 +116,12 @@ export const WeatherForm = ({ captureIndexLi }) => {
               Search
             </button>
           </div>
-          <div className="weather__list--container">
+          <div
+            className={`weather__list--container ${
+              isSelected ? "none" : "block"
+            }`}
+            ref={refContainer}
+          >
             <ul>{isLoading ? <p>is loading</p> : <>{renderDataInput}</>}</ul>
           </div>
         </div>
