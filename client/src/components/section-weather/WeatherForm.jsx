@@ -111,9 +111,10 @@ export const WeatherForm = () => {
               id="city"
               type="text"
               name="city"
+              placeholder="Search a city"
             />
             <button className="weather__button" type="submit" value="Search">
-              Search
+              {isLoading ? "Loading" : "Search"}
             </button>
           </div>
           <div
@@ -122,7 +123,7 @@ export const WeatherForm = () => {
             }`}
             ref={refContainer}
           >
-            <ul>{isLoading ? <p>is loading</p> : <>{renderDataInput}</>}</ul>
+            <ul>{isLoading ? null : <>{renderDataInput}</>}</ul>
           </div>
         </div>
       </form>

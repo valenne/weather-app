@@ -192,13 +192,14 @@ a:not([class]) {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 0px 12px;
+  padding: 8px 12px;
   font-size: 14px;
   width: 100%;
   height: 100%;
 }
 .weather__list--li:is(:hover, :active) {
-  color: rgba(224, 217, 217, 0.801);
+  font-weight: 700;
+  border-bottom: 1px solid black;
 }
 
 .weather_list--text {
