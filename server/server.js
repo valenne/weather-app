@@ -19,10 +19,14 @@ app.get("/api", async (req, res) => {
 });
 
 app.get("/weather?", async (req, res) => {
-  const city = req.query;
-  const response = await weatherResponseData(city.name);
-
-  res.send(response);
+  try {
+    const city = req.query;
+    const response = await weatherResponseData(city.name);
+    res.status(200).send(response);
+  } catch (e) {
+    res.status(500).send("Internal Server Error");
+    console.error(e.message);
+  }
 });
 
 app.listen(DevParameter.PORT, () => {

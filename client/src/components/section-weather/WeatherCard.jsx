@@ -1,12 +1,33 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useState, useRef } from "react";
 import { WeatherContext } from "../../context/WeatherContext.jsx";
 import { convertTimestamptoTime } from "../../assets/js/format-date.js";
+import { directionWind } from "../../data/degree-direction.js";
 
 export const WeatherCard = () => {
-  const { showData, isSelected, setIsSelected } = useContext(WeatherContext);
+  const { showData, isSelected, setIsSelected, setCaptureIndex } =
+    useContext(WeatherContext);
+  const [temperatureType, setTemperatureType] = useState(true);
 
-  console.log(isSelected);
-  console.log(showData);
+  const showTemp = useRef();
+
+  const changeTemperature = (e) => {
+    if (e.target.innerText === "°C") {
+      setTemperatureType(true);
+      showTemp.current.innerText = Math.round(showData.main.temp, 2);
+    } else if (e.target.innerText === "°F") {
+      setTemperatureType(false);
+      showTemp.current.innerText = Math.round(
+        (showData.main.temp, 2) * (9 / 5) + 32
+      );
+    }
+  };
+
+  // reset the useState captureIndex to fixed the error when the user choose again the same index
+  if (showData) {
+    setTimeout(() => {
+      setCaptureIndex("");
+    }, 500);
+  }
 
   return (
     <>
@@ -18,27 +39,59 @@ export const WeatherCard = () => {
               {showData.name}, <span>{showData.sys.country}</span>
             </p>
           </div>
-
           <div className="card__temp">
             <img
-              className=""
               src={`http://openweathermap.org/img/wn/${showData.weather[0].icon}@2x.png`}
               alt="weather of the country"
             />
-            <p className="">{Math.round(showData.main.temp, 2)}°C</p>
-          </div>
+            <span ref={showTemp}>{Math.round(showData.main.temp, 2)}</span>
 
-          <div className="test">
-            <p>Feels Like: {Math.round(showData.main["feels_like"])}°C</p>
-
-            <p>Weather: {showData.weather[0].description}</p>
+            <div className="card__typeTemp">
+              <a
+                href="#"
+                className={` ${
+                  temperatureType ? "temp__color-active" : "temp__color-visited"
+                }`}
+                onClick={(e) => changeTemperature(e)}
+              >
+                °C
+              </a>
+              <span>|</span>
+              <a
+                href="#"
+                className={` ${
+                  temperatureType ? "temp__color-visited" : "temp__color-active"
+                }`}
+                onClick={(e) => changeTemperature(e)}
+              >
+                °F
+              </a>
+            </div>
           </div>
-          <div className="test">
-            <p>Wind: {showData.wind.speed} m/s</p>
-            <p>Humidity: {showData.main.humidity}%</p>
-            <p>Visibility {showData.visibility / 1000} km</p>
+          <div className="weather__description">
             <p>
-              Sunset: {convertTimestamptoTime(showData.sys.sunset).minimal_time}
+              <span>Feels Like: </span>
+              {Math.round(showData.main["feels_like"])}°C
+            </p>
+            <p>
+              <span>Weather: </span>
+              {showData.weather[0].description}
+            </p>
+            <p>
+              <span>Wind: </span>
+              {showData.wind.speed} m/s {directionWind(showData.wind.deg)}
+            </p>
+            <p>
+              <span>Humidity: </span>
+              {showData.main.humidity}%
+            </p>
+            <p>
+              <span>Visibility: </span>
+              {showData.visibility / 1000} km
+            </p>
+            <p>
+              <span>Sunset: </span>
+              {convertTimestamptoTime(showData.sys.sunset).minimal_time}
             </p>
           </div>
         </div>

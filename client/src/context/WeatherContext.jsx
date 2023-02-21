@@ -9,7 +9,6 @@ export const WeatherContextProvider = ({ children }) => {
   const [isSelected, setIsSelected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showData, setShowData] = useState({});
-
   const [captureIndex, setCaptureIndex] = useState("");
 
   const getWeatherData = async (city) => {
