@@ -15,8 +15,16 @@ export const WeatherContextProvider = ({ children }) => {
     try {
       setIsLoading(true);
       let response = await weatherData(city);
-      setResponseWeather(response);
-      setIsLoading(false);
+
+      if (JSON.stringify(response) === "[]") {
+        setResponseWeather({ error: "City Not Found", status: undefined });
+        setIsLoading(false);
+      } else {
+        setResponseWeather(response);
+        setIsLoading(false);
+      }
+
+      console.log(`context file`, response);
     } catch (e) {
       console.error(e.message);
     }

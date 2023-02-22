@@ -1,6 +1,5 @@
 import React, { useContext, useState, useRef, useEffect } from "react";
 import { WeatherContext } from "../../context/WeatherContext.jsx";
-import { weatherData } from "../../api/weather-data.js";
 import { capitalize } from "../../assets/js/capitalize-string.js";
 
 // icons
@@ -21,6 +20,7 @@ export const WeatherForm = () => {
     getWeatherData,
     isSelected,
     setIsSelected,
+    showData,
   } = useContext(WeatherContext);
 
   // handlesubmit form city name
@@ -31,9 +31,7 @@ export const WeatherForm = () => {
       setIsSelected(false);
     }
     let city = e.target[0].value;
-
     setCityName(city);
-
     try {
       await getWeatherData(city);
       e.target.reset();
@@ -58,48 +56,59 @@ export const WeatherForm = () => {
       if (response !== undefined) {
         setShowData(response);
         setIsSelected(true);
-        // set none to hide ul-data
+        console.log({ success: "City was found" });
       }
       return null;
     })();
   }, [captureIndex]);
 
-  const renderDataInput = responseWeather.map((value, key) => {
-    return (
-      <>
-        {value.sys?.country ? (
-          <li className="weather__list--li" key={key} value={key}>
-            <div className="weather_list--text">
-              <span>{capitalize(cityName)},</span>
-              <span> {value.sys.country}</span>
+  // render ul options
 
+  console.log(!JSON.stringify(showData) === "{}");
+  console.log(showData.sys?.hasOwnProperty("country"));
+  console.log(showData);
+
+  const renderDataInput = () =>
+    responseWeather.map((value, key) => {
+      return (
+        <>
+          {!JSON.stringify(showData) === "{}" || showData ? (
+            <li className="weather__list--li" key={key} value={key}>
+              <div className="weather_list--text">
+                <span>{capitalize(cityName)},</span>
+                <span> {value.sys.country}</span>
+
+                <img
+                  className={`weather__flag ${
+                    value.sys?.country ? null : "none"
+                  }`}
+                  src={
+                    value.sys.country?.hasOwnProperty("country") !== undefined
+                      ? `https://openweathermap.org/images/flags/${value.sys.country?.toLowerCase()}.png`
+                      : null
+                  }
+                  alt="flag of the country"
+                />
+              </div>
+
+              <span>{Math.round(value.main.temp)}°C</span>
               <img
-                className={`weather__flag ${
-                  value.sys?.country ? null : "none"
-                }`}
-                src={`https://openweathermap.org/images/flags/${value.sys.country.toLowerCase()}.png`}
-                alt="flag of the country"
+                className="weather__icon"
+                src={`http://openweathermap.org/img/wn/${value.weather[0].icon}@2x.png`}
+                alt="weather of the country"
               />
-            </div>
 
-            <span>{Math.round(value.main.temp)}°C</span>
-            <img
-              className="weather__icon"
-              src={`http://openweathermap.org/img/wn/${value.weather[0].icon}@2x.png`}
-              alt="weather of the country"
-            />
-
-            <IoMdRadioButtonOn
-              className="weather__select"
-              onClick={(e) => captureIndexLi(e)}
-            />
-          </li>
-        ) : (
-          <span key={key}></span>
-        )}
-      </>
-    );
-  });
+              <IoMdRadioButtonOn
+                className="weather__select"
+                onClick={(e) => captureIndexLi(e)}
+              />
+            </li>
+          ) : (
+            <p>Error city not found</p>
+          )}
+        </>
+      );
+    });
 
   return (
     <div className="weather__form--external">
@@ -123,7 +132,7 @@ export const WeatherForm = () => {
             }`}
             ref={refContainer}
           >
-            <ul>{isLoading ? null : <>{renderDataInput}</>}</ul>
+            <ul>{isLoading ? null : <>{renderDataInput()}</>}</ul>
           </div>
         </div>
       </form>

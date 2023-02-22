@@ -13,12 +13,10 @@ export const WeatherCard = () => {
   const changeTemperature = (e) => {
     if (e.target.innerText === "°C") {
       setTemperatureType(true);
-      showTemp.current.innerText = Math.round(showData.main.temp, 2);
+      showTemp.current.innerText = Math.round(showData.main.temp);
     } else if (e.target.innerText === "°F") {
       setTemperatureType(false);
-      showTemp.current.innerText = Math.round(
-        (showData.main.temp, 2) * (9 / 5) + 32
-      );
+      showTemp.current.innerText = Math.round(showData.main.temp) * 1.8 + 32;
     }
   };
 
