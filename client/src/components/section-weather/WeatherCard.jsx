@@ -1,11 +1,10 @@
-import React, { useContext, useState, useRef } from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
 import { WeatherContext } from "../../context/WeatherContext.jsx";
 import { convertTimestamptoTime } from "../../assets/js/format-date.js";
 import { directionWind } from "../../data/degree-direction.js";
 
 export const WeatherCard = () => {
-  const { showData, isSelected, setIsSelected, setCaptureIndex } =
-    useContext(WeatherContext);
+  const { showData, isSelected } = useContext(WeatherContext);
   const [temperatureType, setTemperatureType] = useState(true);
 
   const showTemp = useRef();
@@ -20,16 +19,9 @@ export const WeatherCard = () => {
     }
   };
 
-  // reset the useState captureIndex to fixed the error when the user choose again the same index
-  if (showData) {
-    setTimeout(() => {
-      setCaptureIndex("");
-    }, 500);
-  }
-
   return (
     <>
-      {isSelected ? (
+      {isSelected && showData !== null ? (
         <div className="card__information">
           <div className="card__header">
             <p>{convertTimestamptoTime(showData.dt).complete_time}</p>

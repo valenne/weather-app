@@ -7,20 +7,22 @@ import { IoMdRadioButtonOn } from "react-icons/io";
 
 export const WeatherForm = () => {
   const [cityName, setCityName] = useState("");
+  const [modalView, setModalView] = useState(false);
 
   // ref to ul container
-  const refContainer = useRef();
+
+  const modalRef = useRef();
 
   const {
     responseWeather,
+    setResponseWeather,
     isLoading,
     setShowData,
-    captureIndex,
-    setCaptureIndex,
     getWeatherData,
     isSelected,
     setIsSelected,
-    showData,
+    hasError,
+    isCompleted,
   } = useContext(WeatherContext);
 
   // handlesubmit form city name
@@ -41,74 +43,33 @@ export const WeatherForm = () => {
   };
 
   // capture li index to render data on weathercard component
-  const captureIndexLi = (e) => {
+
+  const captureIndexLi = async (e) => {
+    let index;
     if (typeof e.target.parentElement.value == "number") {
-      setCaptureIndex(e.target.parentElement.value);
+      index = e.target.parentElement.value;
+      await saveData(index);
     } else if (typeof e.target.parentElement.parentElement.value == "number") {
-      setCaptureIndex(e.target.parentElement.parentElement.value);
+      index = e.target.parentElement.parentElement.value;
+      await saveData(index);
     }
-    return;
+    index = "";
   };
 
-  useEffect(() => {
-    (async () => {
-      let response = await responseWeather[captureIndex];
-      if (response !== undefined) {
-        setShowData(response);
-        setIsSelected(true);
-        console.log({ success: "City was found" });
-      }
-      return null;
-    })();
-  }, [captureIndex]);
-
-  // render ul options
-
-  console.log(!JSON.stringify(showData) === "{}");
-  console.log(showData.sys?.hasOwnProperty("country"));
-  console.log(showData);
-
-  const renderDataInput = () =>
-    responseWeather.map((value, key) => {
-      return (
-        <>
-          {!JSON.stringify(showData) === "{}" || showData ? (
-            <li className="weather__list--li" key={key} value={key}>
-              <div className="weather_list--text">
-                <span>{capitalize(cityName)},</span>
-                <span> {value.sys.country}</span>
-
-                <img
-                  className={`weather__flag ${
-                    value.sys?.country ? null : "none"
-                  }`}
-                  src={
-                    value.sys.country?.hasOwnProperty("country") !== undefined
-                      ? `https://openweathermap.org/images/flags/${value.sys.country?.toLowerCase()}.png`
-                      : null
-                  }
-                  alt="flag of the country"
-                />
-              </div>
-
-              <span>{Math.round(value.main.temp)}°C</span>
-              <img
-                className="weather__icon"
-                src={`http://openweathermap.org/img/wn/${value.weather[0].icon}@2x.png`}
-                alt="weather of the country"
-              />
-
-              <IoMdRadioButtonOn
-                className="weather__select"
-                onClick={(e) => captureIndexLi(e)}
-              />
-            </li>
-          ) : (
-            <p>Error city not found</p>
-          )}
-        </>
-      );
-    });
+  const saveData = async (index) => {
+    if (hasError.status === 200) {
+      let response = await responseWeather[index];
+      setShowData(response);
+      setIsSelected(true);
+      console.log({ success: "City was found" });
+      setResponseWeather([]);
+    } else {
+      setShowData(null);
+      setIsSelected(false);
+      console.log({ success: "City wasnt found" });
+      setResponseWeather([]);
+    }
+  };
 
   return (
     <div className="weather__form--external">
@@ -130,9 +91,52 @@ export const WeatherForm = () => {
             className={`weather__list--container ${
               isSelected ? "none" : "block"
             }`}
-            ref={refContainer}
           >
-            <ul>{isLoading ? null : <>{renderDataInput()}</>}</ul>
+            <ul>
+              {isCompleted ? (
+                <>
+                  {responseWeather.map((value, key) => (
+                    <li className="weather__list--li" key={key} value={key}>
+                      <div className="weather_list--text">
+                        <span>{capitalize(cityName)},</span>
+                        <span> {value.sys.country}</span>
+
+                        <img
+                          className={`weather__flag ${
+                            value.sys?.country ? null : "none"
+                          }`}
+                          src={
+                            value.sys.country?.hasOwnProperty("country") !==
+                            undefined
+                              ? `https://openweathermap.org/images/flags/${value.sys.country?.toLowerCase()}.png`
+                              : null
+                          }
+                          alt="flag of the country"
+                        />
+                      </div>
+
+                      <span>{Math.round(value.main.temp)}°C</span>
+                      <img
+                        className="weather__icon"
+                        src={`http://openweathermap.org/img/wn/${value.weather[0].icon}@2x.png`}
+                        alt="weather of the country"
+                      />
+
+                      <IoMdRadioButtonOn
+                        className="weather__select"
+                        onClick={(e) => captureIndexLi(e)}
+                      />
+                    </li>
+                  ))}
+                </>
+              ) : hasError.status === 400 ? (
+                <li className="weather__list--li">
+                  City Not found - Try Again
+                </li>
+              ) : isLoading ? (
+                <p className="weather__list--li">Loading information...</p>
+              ) : null}
+            </ul>
           </div>
         </div>
       </form>
