@@ -1,4 +1,4 @@
-import React, { useContext, useState, useRef, useEffect } from "react";
+import React, { useContext, useState } from "react";
 import { WeatherContext } from "../../context/WeatherContext.jsx";
 import { capitalize } from "../../assets/js/capitalize-string.js";
 
@@ -7,11 +7,8 @@ import { IoMdRadioButtonOn } from "react-icons/io";
 
 export const WeatherForm = () => {
   const [cityName, setCityName] = useState("");
-  const [modalView, setModalView] = useState(false);
 
   // ref to ul container
-
-  const modalRef = useRef();
 
   const {
     responseWeather,
