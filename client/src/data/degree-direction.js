@@ -14,17 +14,18 @@ const degrees = {
   W: [258.75, 281.25],
   WNW: [281.25, 303.75],
   NW: [303.75, 326.25],
-  NNW: [326.25, 348.75],
-};
+  NNW: [326.25, 348.75]
+}
 
-let degreesValues = Object.values(degrees);
+let degreesValues = Object.values(degrees)
 
-export function directionWind(deg) {
-  let response = "";
+export function directionWind (deg) {
+  let response = ''
   degreesValues.forEach((value, index) => {
     if (value[0] < deg && value[1] > deg) {
-      response = Object.keys(degrees)[index];
+      response = Object.keys(degrees)[index]
     }
-  });
-  return response;
+  })
+
+  return response
 }
